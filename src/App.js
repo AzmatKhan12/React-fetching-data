@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
-
+import FormInput from "./components/Form/FormInput";
 import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./components/MoviesList";
@@ -57,6 +57,7 @@ function App() {
 
   return (
     <React.Fragment>
+     <FormInput/>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
