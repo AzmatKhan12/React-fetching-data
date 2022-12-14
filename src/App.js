@@ -1,7 +1,7 @@
 import { Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -12,11 +12,11 @@ function App() {
   const [error, setError]=useState(null)
   const [isShown ,setIsShown] = useState(false);
 
-  async function fetchMoviesHandler() {
+  const  fetchMoviesHandler = useCallback( async ()=> {
     setIsLoading(true)
     setError(null);
     try {
-     const response = await fetch("https://swapi.dev/api/film/");
+     const response = await fetch("https://swapi.dev/api/films/");
      if (!response.ok){
       throw new Error(`something Went wrong! `);
      }
@@ -37,14 +37,18 @@ function App() {
     }
      setIsLoading(false);
      
-  }
+  },[])
+  useEffect(() => {
+    fetchMoviesHandler();
+  },[fetchMoviesHandler]);
+  
   const Reload = <NavBar reload="Retrying" />;
 
   useEffect(()=>{
-   const timmer= setTimeout(() => {
+   const timer= setTimeout(() => {
       setIsShown(true)
     }, 5000);
-    return () => clearTimeout(timmer)
+    return () => clearTimeout(timer)
   },[])
 
   const CloseHandler=() =>{
@@ -55,19 +59,19 @@ function App() {
     <React.Fragment>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
-        {isShown && <button onClick={CloseHandler}>Cancel</button>}
       </section>
 
       <section>
         {!isLoading && movies.length > 0 && <MoviesList movies={movies} />}
 
-        {!isLoading && movies.length === 0 && !error && <p>No movies Found</p>}
-        {!isLoading && error && isShown &&(
+        {!isLoading && movies.length === 0 && <p>No movies Found</p>}
+        {!isLoading && error && isShown && (
           <p>
-            {error} { Reload }
+            {error} {Reload}
           </p>
         )}
         {isLoading && <p>Loading..</p>}
+        {error && isShown && <button onClick={CloseHandler}>Cancel</button>}
       </section>
     </React.Fragment>
   );
